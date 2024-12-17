@@ -1,0 +1,171 @@
+.sidebar {
+    -fx-background-color: #11101D;
+    -fx-padding: 0 10;
+    -fx-pref-width: 45;
+    -fx-transition: max-width 0.5s ease;
+}
+
+.logo-box {
+    -fx-alignment: center-right;
+    -fx-transition: all 0.5s ease; /* Transisi halus */
+}
+
+.sidebar .logo-details {
+    -fx-alignment: center-left;
+}
+
+/* Gaya logoName atau Menu */
+.logo-name {
+    -fx-text-fill: white;
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+    -fx-opacity: 0; /* Awalnya tersembunyi */
+    -fx-transition: opacity  200s ease;
+
+}
+
+/* Posisi toggleBtn */
+.sidebar .logo-pane {
+    -fx-alignment: center-left;
+    -fx-spacing: 5;
+    -fx-padding: 5 0;
+}
+
+/* Gaya default untuk toggle button
+   Sesuaikan dengan COLLAPSED_WIDTH
+   Tetap transparan
+*/
+.toggle-btn {
+    -fx-background-color: transparent;
+    -fx-transition: -fx-icon-color 0.5s ease;
+    -fx-padding: 10;
+}
+
+/* Gaya ikon dalam toggle button */
+.toggle-btn .ikonli-font-icon {
+    -fx-icon-color: white;
+    -fx-icon-size: 20;
+    -fx-transition: -fx-icon-color 0.5s ease;
+}
+
+.sidebar .nav-list {
+    -fx-spacing: 5;
+    -fx-transition: all 0.5s ease;
+}
+
+.nav-item {
+    -fx-padding: 5 0;
+}
+
+.nav-item .nav-button {
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+    -fx-alignment: center-left;
+}
+
+.nav-item .nav-icon {
+    -fx-icon-color: white;
+    -fx-icon-size: 20;
+    -fx-transition: -fx-icon-color 0.5s ease;
+}
+
+.nav-item .links_name {
+    -fx-opacity: 0;
+    -fx-text-fill: white;
+    -fx-font-size: 12;
+    -fx-pref-width: 200;
+    -fx-transition: all 0.5s ease;
+}
+
+
+
+.nav-item:hover .tooltip {
+    -fx-opacity: 0;
+    -fx-translate-y: -20; /*Tooltip naik saat hover*/
+}
+
+/*Profile Section*/
+.profile-details {
+    -fx-background-color: #1d1b31;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-background-radius: 6;
+    -fx-opacity: 0;
+    -fx-transition: all 0.5s ease;
+}
+
+/*Profile Section*/
+.profile-details .name {
+    -fx-text-fill: white;
+    -fx-font-size: 12;
+}
+
+/*Profile Section*/
+.profile-details .job {
+    -fx-text-fill: #666;
+    -fx-font-size: 12;
+    -fx-max-width: 80;
+}
+
+/* Saat sidebar expanded*/
+
+.sidebar:expanded {
+    -fx-padding: 0 10;
+    -fx-transition: opacity 0.5s ease;
+}
+
+.sidebar:expanded .logo-name {
+    -fx-opacity: 1;
+    -fx-padding: 0 10;
+    -fx-font-size: 20;
+    -fx-alignment: center-left;
+    -fx-transition: opacity 0.5s ease;
+}
+
+.sidebar:expanded .logo-pane {
+    -fx-spacing: 5;
+    -fx-padding: 5 0;
+}
+
+.sidebar:expanded toggle-btn {
+    -fx-transition: -fx-icon-color 0.5s ease;
+    -fx-padding: 10;
+}
+
+.sidebar:expanded .profile-details {
+    -fx-opacity: 1;
+    -fx-max-width: 250;
+    -fx-transition: opacity 0.5s ease;
+}
+
+.sidebar:expanded .tooltip {
+    visibility: hidden;
+}
+
+.sidebar:expanded .nav-item .nav-icon {
+    -fx-icon-color: white;
+    -fx-icon-size: 20;
+    -fx-transition: -fx-icon-color 0.5s ease;
+}
+
+.sidebar:expanded .nav-item .links_name {
+    -fx-opacity: 1;
+    -fx-text-fill: white;
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+    -fx-pref-width: 200;
+    -fx-transition: all 0.5s ease;
+}
+
+.sidebar:expanded .nav-button {
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+    -fx-alignment: center-left;
+}
+
+.sidebar:expanded .nav-icon {
+    -fx-icon-color: white;
+    -fx-icon-size: 20;
+    -fx-transition: -fx-icon-color 0.5s ease;
+}
+

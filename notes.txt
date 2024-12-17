@@ -1,0 +1,352 @@
+saya memiliki stuktur proyek javafx sebagai berikut:
+src/
+└── main/
+    ├── java/
+    │   ├── sidebar/
+    │   │   ├── layout/
+    │   │   │   ├── NavItem.java
+    │   │   │   └── Sidebar.java
+    │   │   └── Main.java
+    │   └── module-info.java
+    └── resources/
+        ├── css/
+        │   └── sidebar.css
+        └── images/
+            └── profile.jpg
+
+src/main/java/com/sidebar/layout/NavItem.java
+package com.sidebar.layout;
+
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.control.Button;
+import org.kordamp.ikonli.boxicons.BoxiconsRegular;
+import org.kordamp.ikonli.javafx.FontIcon;
+
+public class NavItem extends HBox {
+    private final Label label;
+    private final FontIcon icon;
+
+    public NavItem(String text, String iconLiteral) {
+        getStyleClass().add("nav-item");
+
+        Button button = new Button();
+        button.getStyleClass().add("nav-button");
+
+        // Fix icon literal format
+        icon = new FontIcon();
+        icon.setIconLiteral("bxs-" + iconLiteral); // Using BoxiconsRegular icons
+        icon.getStyleClass().add("nav-icon");
+
+        label = new Label(text);
+        label.getStyleClass().add("links_name");
+
+        button.setGraphic(new HBox(10, icon, label));
+        getChildren().add(button);
+
+        // Add tooltip for collapsed state
+        Label tooltip = new Label(text);
+        tooltip.getStyleClass().add("tooltip");
+        getChildren().add(tooltip);
+    }
+
+    public void setOnAction(Runnable action) {
+        Button button = (Button) getChildren().get(0);
+        button.setOnAction(e -> action.run());
+    }
+
+    public Label getLabel() {
+        return label;
+    }
+
+    public FontIcon getIcon() {
+        return icon;
+    }
+
+    
+}
+
+src/main/java/com/sidebar/layout/Sidebar.java
+package com.sidebar.layout;
+
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.util.Duration;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.css.PseudoClass;
+import javafx.geometry.Pos;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import org.kordamp.ikonli.javafx.FontIcon;
+
+public class Sidebar extends VBox {
+    private static final PseudoClass EXPANDED = PseudoClass.getPseudoClass("expanded");
+    private static final double COLLAPSED_WIDTH = 78;
+    private static final double EXPANDED_WIDTH = 250;
+
+    private final BooleanProperty expanded = new SimpleBooleanProperty(false);
+    private final VBox navList;
+    private final Label logoName;
+    private final VBox profileDetails;
+    private final Button toggleBtn;
+
+    public Sidebar() {
+        getStyleClass().add("sidebar");
+
+        // Logo section
+        logoName = new Label("Menu");
+        logoName.getStyleClass().add("logo-name");
+
+        toggleBtn = new Button();
+        toggleBtn.getStyleClass().add("toggle-btn");
+        FontIcon menuIcon = new FontIcon("bx-menu");
+        toggleBtn.setGraphic(menuIcon);
+        toggleBtn.setOnAction(e -> toggleSidebar());
+
+        VBox logoDetails = new VBox(10);
+        logoDetails.getStyleClass().add("logo-details");
+        logoDetails.setAlignment(Pos.CENTER_LEFT);
+        logoDetails.getChildren().addAll(logoName, toggleBtn);
+
+        // Navigation list
+        navList = new VBox();
+        navList.getStyleClass().add("nav-list");
+        createNavigationItems();
+
+        // Profile section
+        profileDetails = new VBox();
+        profileDetails.getStyleClass().add("profile-details");
+        createProfileSection();
+
+        getChildren().addAll(logoDetails, navList, profileDetails);
+
+        // Initialize state
+        setPrefWidth(COLLAPSED_WIDTH);
+        expanded.addListener((obs, oldVal, newVal) -> {
+            pseudoClassStateChanged(EXPANDED, newVal);
+            animateWidth(newVal ? EXPANDED_WIDTH : COLLAPSED_WIDTH);
+            updateMenuIcon(newVal);
+        });
+    }
+
+    private void createNavigationItems() {
+        NavItemConfig[] items = {
+                new NavItemConfig("Accueil", "grid-alt"),
+                new NavItemConfig("Profil", "user"),
+                new NavItemConfig("Messages", "chat"),
+                new NavItemConfig("Statistiques", "pie-chart-alt-2"),
+                new NavItemConfig("Fichiers", "folder"),
+                new NavItemConfig("Boutique", "cart-alt"),
+                new NavItemConfig("Coups de coeur", "heart"),
+                new NavItemConfig("Paramètres", "cog")
+        };
+
+        for (NavItemConfig item : items) {
+            NavItem navItem = new NavItem(item.text(), item.icon());
+            navItem.setOnAction(() -> handleNavigation(item.text()));
+            navList.getChildren().add(navItem);
+        }
+    }
+
+    private void handleNavigation(String section) {
+        // Handle navigation logic here
+        System.out.println("Navigating to: " + section);
+    }
+
+    private void createProfileSection() {
+        Label nameLabel = new Label("Paulon");
+        nameLabel.getStyleClass().add("name");
+
+        Label jobLabel = new Label("Développeur Web");
+        jobLabel.getStyleClass().add("job");
+
+        profileDetails.getChildren().addAll(nameLabel, jobLabel);
+    }
+
+    private void updateMenuIcon(boolean expanded) {
+        FontIcon icon = (FontIcon) toggleBtn.getGraphic();
+        icon.setIconLiteral(expanded ? "bx-menu-alt-right" : "bx-menu");
+    }
+
+    private void toggleSidebar() {
+        expanded.set(!expanded.get());
+    }
+
+    private void animateWidth(double targetWidth) {
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(prefWidthProperty(), getWidth())),
+                new KeyFrame(Duration.millis(300), new KeyValue(prefWidthProperty(), targetWidth))
+        );
+        timeline.play();
+    }
+
+    public boolean isExpanded() {
+        return expanded.get();
+    }
+
+    public BooleanProperty expandedProperty() {
+        return expanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        this.expanded.set(expanded);
+    }
+
+    private record NavItemConfig(String text, String icon) {}
+}
+
+
+src/main/java/com/sidebar/Main.java
+package com.sidebar;
+
+import layout.com.github.alphareso.Sidebar;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+
+import java.util.Objects;
+
+public class Main extends Application {
+    @Override
+    public void start(Stage primaryStage) {
+        BorderPane root = new BorderPane();
+        Sidebar sidebar = new Sidebar();
+        root.setLeft(sidebar);
+
+        Scene scene = new Scene(root, 1000, 600);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/sidebar.css")).toExternalForm());
+
+        primaryStage.setTitle("Sidebar Demo");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+
+src/main/java/module-info.java
+module sidebar.menu {
+    requires javafx.controls;
+    requires javafx.fxml;
+    requires javafx.graphics;
+    requires org.kordamp.ikonli.javafx;
+    requires org.kordamp.ikonli.boxicons;
+
+    exports com.sidebar.layout;
+
+    exports com.sidebar;
+}
+
+src/main/resources/css/sidebar.css
+.sidebar {
+    -fx-background-color: #11101D;
+    -fx-padding: 6 14;
+    -fx-spacing: 20;
+    -fx-transition: all 0.5s ease;
+}
+
+.sidebar .logo-details {
+    -fx-spacing: 10;
+    -fx-padding: 0 0 10 0;
+}
+
+.sidebar .logo-name {
+    -fx-text-fill: white;
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+    -fx-opacity: 0;
+    -fx-transition: opacity 0.4s ease;
+}
+
+.sidebar:expanded .logo-name {
+    -fx-opacity: 100;
+}
+
+.sidebar .nav-list {
+    -fx-spacing: 8;
+}
+
+.nav-item {
+    -fx-padding: 5;
+}
+
+.nav-item .nav-button {
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+    -fx-alignment: center-left;
+    -fx-min-width: 50;
+    -fx-cursor: hand;
+}
+
+.nav-item .nav-icon {
+    -fx-icon-color: white;
+    -fx-icon-size: 20;
+    -fx-transition: -fx-icon-color 0.4s ease;
+}
+
+.nav-item .links_name {
+    -fx-text-fill: white;
+    -fx-font-size: 15;
+    -fx-opacity: 0;
+    -fx-max-width: 0;
+    -fx-transition: all 0.4s ease;
+}
+
+.sidebar:expanded .links_name {
+    -fx-opacity: 1;
+    -fx-max-width: 700;
+}
+
+.nav-item .tooltip {
+    -fx-max-width: 150px; /* Maksimal lebar untuk tooltip */
+    -fx-wrap-text: true;  /* Bungkus teks jika panjang */
+    -fx-background-color: white;
+    -fx-text-fill: #11101D;
+    -fx-padding: 6 12;
+    -fx-background-radius: 4;
+    -fx-opacity: 0;
+    -fx-translate-x: 100; /* Sesuaikan posisi */
+    -fx-translate-y: -10; /* Posisikan tooltip di atas tombol */
+    -fx-transition: opacity 0.3s ease, -fx-translate-y 0.3s ease;
+}
+
+.nav-item:hover .tooltip {
+    -fx-opacity: 1;
+    -fx-translate-y: -20; /* Tooltip naik saat hover */
+}
+.sidebar:expanded .tooltip {
+    visibility: hidden;
+}
+
+.profile-details {
+    -fx-background-color: #1d1b31;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-background-radius: 6;
+    -fx-opacity: 0;
+    -fx-max-width: 0;
+    -fx-transition: all 0.4s ease;
+}
+
+.sidebar:expanded .profile-details {
+    -fx-opacity: 1;
+    -fx-max-width: 500;
+}
+
+.profile-details .name {
+    -fx-text-fill: white;
+    -fx-font-size: 15;
+}
+
+.profile-details .job {
+    -fx-text-fill: #666;
+    -fx-font-size: 12;
+}
+
+tugas anda adalah menanalisa proyek saya dan perbarui ikon toggleBtn ketika sidebar expanded ikon berada di sebelah kanan logo Menu.
